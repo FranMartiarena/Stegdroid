@@ -1,6 +1,6 @@
 package com.example.steghide;
-//TO DO:Checkear la extension del archivo seleccionado para que no sea un video, gif o otro formato no admitido
-//TO DO:Checkear si no se ingreso un mensaje para esconder
+//DONE:Checkear la extension del archivo seleccionado para que no sea un video, gif o otro formato no admitido
+//DONE:Checkear si no se ingreso un mensaje para esconder
 
 /*
      *Encrypt an image with text, the output file will be of type .png
@@ -38,10 +38,10 @@ public class activity_image_selection2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_selection2);
-        vista_imagen = (ImageView) findViewById(R.id.imageView2_id);
+        vista_imagen = findViewById(R.id.imageView2_id);
         vista_imagen.setDrawingCacheEnabled(true);
         vista_imagen.buildDrawingCache(true);
-        editTextTextMultiLines = (EditText) findViewById(R.id.editTextTextMultiLineId);
+        editTextTextMultiLines = findViewById(R.id.editTextTextMultiLineId);
 
         Intent intent = getIntent();
         String path= intent.getStringExtra("path");
@@ -52,6 +52,10 @@ public class activity_image_selection2 extends AppCompatActivity {
 
     public void encode(View view){
         message = editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiter
+        if (message.matches("#####")) {
+            Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         byte[] message_in_bits = message.getBytes();
         StringBuilder binary = new StringBuilder();//the variable binary get the message in bytes as a string
 
@@ -75,7 +79,8 @@ public class activity_image_selection2 extends AppCompatActivity {
 
         if(cantidad_bytes_img < cantidad_bits_msg){
             Toast.makeText(this, "La imagen no es lo suficientemente grande para el mensaje a ocultar", Toast.LENGTH_LONG).show();
-            //TO DO: Cambiar de activity para volver a seleccionar la imagen
+            Intent intent = new Intent(this,image_selection.class);
+            startActivity(intent);
         }
         else {
             //Log.d("TAG", "Este es el tamaño de la imagen:"+String.valueOf(width)+" "+String.valueOf(height));
@@ -93,7 +98,6 @@ public class activity_image_selection2 extends AppCompatActivity {
                     int pixel = bitmap.getPixel(x,y);
 
                     if (count >= cantidad_bits_msg){
-                        //TO DO: devolver la imagen cambiada
                         break outerloop;
                     }
                     else{
@@ -116,7 +120,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
-                            //TO DO: devolver la imagen cambiada
+
                             break outerloop;
                         }
                         //insertar bit en g
@@ -127,7 +131,6 @@ public class activity_image_selection2 extends AppCompatActivity {
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
-                            //TO DO: devolver la imagen cambiada
                             break outerloop;
                         }
                         //insertar bit en b

@@ -28,9 +28,10 @@ public class image_selection extends AppCompatActivity {
 
 
     public void cargarImagen(){
-        Intent galeria = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        galeria.setType("image/");
-        startActivityForResult(galeria.createChooser(galeria,"Seleccione la Imagen"),10);
+        final int PICK_IMAGE = 1;
+        Intent galeria = new Intent(Intent.ACTION_GET_CONTENT);
+        galeria.setType("image/*");
+        startActivityForResult(Intent.createChooser(galeria,"Seleccione la Imagen"),PICK_IMAGE);
     }
 
     @Override
