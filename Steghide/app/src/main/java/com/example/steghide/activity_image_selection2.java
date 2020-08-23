@@ -51,7 +51,6 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
     public void encode(View view){
-
         message = editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiter
         byte[] message_in_bits = message.getBytes();
         StringBuilder binary = new StringBuilder();//the variable binary get the message in bytes as a string
@@ -82,8 +81,12 @@ public class activity_image_selection2 extends AppCompatActivity {
             //Log.d("TAG", "Este es el tamaño de la imagen:"+String.valueOf(width)+" "+String.valueOf(height));
             //editTextTextMultiLines.setText(String.valueOf(cantidad_bytes_img));
             int count = 0;
-            Bitmap bitmap = ((BitmapDrawable)vista_imagen.getDrawable()).getBitmap();
+            vista_imagen.invalidate();
+            BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
+            Bitmap bitmap = drawable.getBitmap();
+            bitmap = bitmap.copy(bitmap.getConfig() , true);
 
+            outerloop:
             for (int x = 0; x < width; x++){
                 for (int y = 0; y < height; y++){
 
@@ -91,6 +94,7 @@ public class activity_image_selection2 extends AppCompatActivity {
 
                     if (count >= cantidad_bits_msg){
                         //TO DO: devolver la imagen cambiada
+                        break outerloop;
                     }
                     else{
 
@@ -108,31 +112,39 @@ public class activity_image_selection2 extends AppCompatActivity {
                         redValueBynaryString = redValueBynaryString.substring(0,redValueBynaryString.length()-1)+binary.charAt(count);
                         int newRedValue = Integer.parseInt(redValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, greenValue, blueValue));//use this to change pixel values xD
-                        count = count ++;
+                        Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
+                        count = count + 1;
 
                         if (count >= cantidad_bits_msg){
                             //TO DO: devolver la imagen cambiada
+                            break outerloop;
                         }
                         //insertar bit en g
                         greenValueBynaryString = greenValueBynaryString.substring(0,greenValueBynaryString.length()-1)+binary.charAt(count);
                         int newGreenValue = Integer.parseInt(greenValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, blueValue));//use this to change pixel values xD
-                        count = count ++;
+                        Log.d("TAG","Cambie "+greenValue+" por "+newGreenValue);
+                        count = count + 1;
 
                         if (count >= cantidad_bits_msg){
                             //TO DO: devolver la imagen cambiada
+                            break outerloop;
                         }
                         //insertar bit en b
                         blueValueBynaryString = blueValueBynaryString.substring(0,blueValueBynaryString.length()-1)+binary.charAt(count);
                         int newBlueValue = Integer.parseInt(blueValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, newBlueValue));//use this to change pixel values xD
-                        count = count ++;
+                        Log.d("TAG","Cambie "+blueValue+" por "+newBlueValue);
+                        count = count + 1;
 
                     }
 
 
                 }
             }
+            vista_imagen.setImageBitmap(bitmap);
+            Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+
         }
 
 
