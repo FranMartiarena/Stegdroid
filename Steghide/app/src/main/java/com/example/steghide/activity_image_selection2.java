@@ -21,6 +21,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -28,6 +29,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.graphics.Matrix;
+
+import java.io.ByteArrayOutputStream;
+import java.net.BindException;
 
 public class activity_image_selection2 extends AppCompatActivity {
 
@@ -50,6 +54,7 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
     }
+
 
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
@@ -138,6 +143,7 @@ public class activity_image_selection2 extends AppCompatActivity {
 
                         //insertar bit en r
                         redValueBynaryString = redValueBynaryString.substring(0,redValueBynaryString.length()-1)+binary.charAt(count);
+                        //redValueBynaryString = binary.charAt(count)+redValueBynaryString.substring(1,redValueBynaryString.length());
                         int newRedValue = Integer.parseInt(redValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, greenValue, blueValue));//use this to change pixel values xD
                         //Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
@@ -149,6 +155,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                         }
                         //insertar bit en g
                         greenValueBynaryString = greenValueBynaryString.substring(0,greenValueBynaryString.length()-1)+binary.charAt(count);
+                        //greenValueBynaryString = binary.charAt(count)+greenValueBynaryString.substring(1,greenValueBynaryString.length());
                         int newGreenValue = Integer.parseInt(greenValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, blueValue));//use this to change pixel values xD
                         //Log.d("TAG","Cambie "+greenValue+" por "+newGreenValue);
@@ -160,6 +167,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                         }
                         //insertar bit en b
                         blueValueBynaryString = blueValueBynaryString.substring(0,blueValueBynaryString.length()-1)+binary.charAt(count);
+                        //blueValueBynaryString = binary.charAt(count)+blueValueBynaryString.substring(1,blueValueBynaryString.length());
                         int newBlueValue = Integer.parseInt(blueValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, newBlueValue));//use this to change pixel values xD
                         //Log.d("TAG","Cambie "+blueValue+" por "+newBlueValue);
@@ -171,15 +179,20 @@ public class activity_image_selection2 extends AppCompatActivity {
                 }
             }
             try {
+                ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+                byte[] byteArray = bStream.toByteArray();
+
                 Intent intent = new Intent(this, save_image.class);
-                intent.putExtra("BitmapImage", bitmap);
+                intent.putExtra("BitmapImage", byteArray);
                 //Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
                 //Toast.makeText(this, "Viejo: "+ oldRedValue, Toast.LENGTH_LONG).show();
                 startActivity(intent);
+                finish();
 
             }
             catch (Exception e){
-                Toast.makeText(this, "Cant proceed due to: "+e , Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Error, Try with another image", Toast.LENGTH_LONG).show();
             }
 
 

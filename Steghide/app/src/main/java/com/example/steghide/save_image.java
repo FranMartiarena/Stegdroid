@@ -9,11 +9,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,15 +30,15 @@ import java.io.OutputStream;
 public class save_image extends AppCompatActivity {
 
     ImageView vista_imagen;
-
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_image);
         vista_imagen = findViewById(R.id.imageView3_id);
-        Intent intent = getIntent();
-        Bitmap bitmap = intent.getParcelableExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         vista_imagen.setImageBitmap(bitmap);
         vista_imagen.buildDrawingCache();
         vista_imagen.setDrawingCacheEnabled(true);
@@ -46,6 +48,8 @@ public class save_image extends AppCompatActivity {
 
 
     }
+
+
 
 
     // Storage Permissions
@@ -72,8 +76,8 @@ public class save_image extends AppCompatActivity {
     public void saveImage(View view){
         verifyStoragePermissions(this);
         OutputStream fOut = null;
-        Intent intent = getIntent();
-        Bitmap bitmap = intent.getParcelableExtra("BitmapImage");
+        //Intent intent = getIntent();
+        //Bitmap bitmap = intent.getParcelableExtra("BitmapImage");
 
         try {
             String path = Environment.getExternalStorageDirectory().toString();
