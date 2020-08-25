@@ -13,14 +13,14 @@
         android:layout_height="200dp"
         android:layout_marginTop="30dp"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"
         android:contentDescription="@string/selected_image_name"
         android:cropToPadding="false"
+        android:scaleType="fitXY"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        tools:srcCompat="@android:drawable/gallery_thumb" />
 
     <Button
         android:id="@+id/done_button_id"

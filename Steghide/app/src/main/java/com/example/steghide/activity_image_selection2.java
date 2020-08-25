@@ -27,7 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import android.graphics.Matrix;
 
 public class activity_image_selection2 extends AppCompatActivity {
 
@@ -43,13 +43,31 @@ public class activity_image_selection2 extends AppCompatActivity {
         vista_imagen.setDrawingCacheEnabled(true);
         vista_imagen.buildDrawingCache(true);
         editTextTextMultiLines = findViewById(R.id.editTextTextMultiLineId);
-
         Intent intent = getIntent();
         String path= intent.getStringExtra("path");
         Uri fileUri = Uri.parse(path);
         vista_imagen.setImageURI(fileUri);
+
+
     }
 
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
 
     public void encode(View view){
         message = editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiter
@@ -91,6 +109,7 @@ public class activity_image_selection2 extends AppCompatActivity {
             BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
             Bitmap bitmap = drawable.getBitmap();
             bitmap = bitmap.copy(bitmap.getConfig() , true);
+            bitmap = getResizedBitmap(bitmap, width, height);
             //int old_pixel = bitmap.getPixel(0,0);
             //int oldRedValue = Color.red(old_pixel);
 

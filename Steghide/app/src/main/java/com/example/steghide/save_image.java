@@ -44,6 +44,7 @@ public class save_image extends AppCompatActivity {
         //int newRedValue = Color.red(new_pixel);
         //Toast.makeText(this, "nuevo: "+ newRedValue, Toast.LENGTH_LONG).show();
 
+
     }
 
 
@@ -71,7 +72,8 @@ public class save_image extends AppCompatActivity {
     public void saveImage(View view){
         verifyStoragePermissions(this);
         OutputStream fOut = null;
-        Bitmap bitmap = vista_imagen.getDrawingCache();//PROBLEMA
+        Intent intent = getIntent();
+        Bitmap bitmap = intent.getParcelableExtra("BitmapImage");
 
         try {
             String path = Environment.getExternalStorageDirectory().toString();
