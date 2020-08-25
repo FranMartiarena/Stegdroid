@@ -1,7 +1,6 @@
 package com.example.steghide;
-//DONE:Checkear la extension del archivo seleccionado para que no sea un video, gif o otro formato no admitido
-//DONE:Checkear si no se ingreso un mensaje para esconder
-
+//TO DO: Poder pasar bitmaps grandes entre activities
+//TO DO: Pasar el nombre de la primera imagen por intent add extra para usar el nombre en el nuevo archivo
 /*
      *Encrypt an image with text, the output file will be of type .png
      *@param path        The path (folder) containing the image to modify
@@ -23,8 +22,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -90,6 +91,8 @@ public class activity_image_selection2 extends AppCompatActivity {
             BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
             Bitmap bitmap = drawable.getBitmap();
             bitmap = bitmap.copy(bitmap.getConfig() , true);
+            //int old_pixel = bitmap.getPixel(0,0);
+            //int oldRedValue = Color.red(old_pixel);
 
             outerloop:
             for (int x = 0; x < width; x++){
@@ -97,7 +100,9 @@ public class activity_image_selection2 extends AppCompatActivity {
 
                     int pixel = bitmap.getPixel(x,y);
 
+
                     if (count >= cantidad_bits_msg){
+                        //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                         break outerloop;
                     }
                     else{
@@ -116,28 +121,29 @@ public class activity_image_selection2 extends AppCompatActivity {
                         redValueBynaryString = redValueBynaryString.substring(0,redValueBynaryString.length()-1)+binary.charAt(count);
                         int newRedValue = Integer.parseInt(redValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, greenValue, blueValue));//use this to change pixel values xD
-                        Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
+                        //Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
-
+                            //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                             break outerloop;
                         }
                         //insertar bit en g
                         greenValueBynaryString = greenValueBynaryString.substring(0,greenValueBynaryString.length()-1)+binary.charAt(count);
                         int newGreenValue = Integer.parseInt(greenValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, blueValue));//use this to change pixel values xD
-                        Log.d("TAG","Cambie "+greenValue+" por "+newGreenValue);
+                        //Log.d("TAG","Cambie "+greenValue+" por "+newGreenValue);
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
+                            //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                             break outerloop;
                         }
                         //insertar bit en b
                         blueValueBynaryString = blueValueBynaryString.substring(0,blueValueBynaryString.length()-1)+binary.charAt(count);
                         int newBlueValue = Integer.parseInt(blueValueBynaryString, 2);
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, newBlueValue));//use this to change pixel values xD
-                        Log.d("TAG","Cambie "+blueValue+" por "+newBlueValue);
+                        //Log.d("TAG","Cambie "+blueValue+" por "+newBlueValue);
                         count = count + 1;
 
                     }
@@ -145,8 +151,18 @@ public class activity_image_selection2 extends AppCompatActivity {
 
                 }
             }
-            vista_imagen.setImageBitmap(bitmap);
-            Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+            try {
+                Intent intent = new Intent(this, save_image.class);
+                intent.putExtra("BitmapImage", bitmap);
+                //Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Viejo: "+ oldRedValue, Toast.LENGTH_LONG).show();
+                startActivity(intent);
+
+            }
+            catch (Exception e){
+                Toast.makeText(this, "Cant proceed due to: "+e , Toast.LENGTH_LONG).show();
+            }
+
 
         }
 

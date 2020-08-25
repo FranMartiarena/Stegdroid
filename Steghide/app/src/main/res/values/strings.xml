@@ -3,6 +3,8 @@
     <string name="message_hint">Write your secret message here</string>
     <string name="select_name">Select</string>
     <string name="select_image_name">Select Image</string>
+    <string name="save_name">Save</string>
+    <string name="new_image_name">New Image:</string>
     <string name="selected_image_name">Selected Image</string>
     <string name="hide_name">HIDE</string>
     <string name="decode_name">Decode</string>
