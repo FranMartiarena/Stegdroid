@@ -144,7 +144,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                         //insertar bit en r
                         redValueBynaryString = redValueBynaryString.substring(0,redValueBynaryString.length()-1)+binary.charAt(count);
                         //redValueBynaryString = binary.charAt(count)+redValueBynaryString.substring(1,redValueBynaryString.length());
-                        int newRedValue = Integer.parseInt(redValueBynaryString, 2);
+                        int newRedValue = Integer.parseInt(redValueBynaryString, 2);//new red binary value to decimal
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, greenValue, blueValue));//use this to change pixel values xD
                         //Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
                         count = count + 1;
