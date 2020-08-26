@@ -1,7 +1,5 @@
 package com.example.steghide;
 
-//TO DO: Pasar de string binario a ascii
-//TO DO: encontrar en delimitador en los ultimos 5 caracteres del mensaje al decodearlo
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +11,15 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class image_selection4 extends AppCompatActivity {
 
@@ -57,31 +60,48 @@ public class image_selection4 extends AppCompatActivity {
 
     public String toAsciiText(String binary_message){
 
-        int charCode = Integer.parseInt(binary_message, 2);
-        String str = new Character((char)charCode).toString();
+        String message = "";
+        List<String> bytes = new ArrayList<>();
 
+        for (int start = 0; start < binary_message.length(); start += 8) {
+            bytes.add(binary_message.substring(start, Math.min(binary_message.length(), start + 8)));
+        }
 
-        return str;
+        for (String b : bytes){
+            int charCode = Integer.parseInt(b, 2);
+            String str = new Character((char)charCode).toString();
+            bytes.set(bytes.indexOf(b), str);
+
+        }
+
+        for (String b : bytes){
+            message = message + b;
+        }
+        return message;
     }
 
     public boolean checkDelimiter(String binary_message){
-        if (binary_message.length() < 8){
+        if (binary_message.length() % 8 != 0 || binary_message.length() == 0){
             return false;
         }
         else{
-            String delimiter = "#####";
             String message = toAsciiText(binary_message);
+
             if (message.length() <= 5){
                 return false;
             }
             else{
-                if (message.substring(message.length()-5) == delimiter){
+                String lastFive = message.substring(message.length() -5);
+                //Log.d("TAG", "Ultimos 5 caracteres: "+lastFive);
+                if (lastFive.equals("#####")){
                     return true;
                 }
                 else{
                     return false;
                 }
+
             }
+
         }
 
 
@@ -105,9 +125,11 @@ public class image_selection4 extends AppCompatActivity {
         for (int x = 0; x < width; x++){
             for (int y = 0; y < height; y++) {
                 int pixel = bitmap.getPixel(x,y);
-                if (checkDelimiter(message) == true){
+                if (checkDelimiter(message)){
                     //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                    break outerloop;
+                    String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                    vista_texto.setText(hidden);
+                    return;
                 }
                 else{
 
@@ -120,15 +142,20 @@ public class image_selection4 extends AppCompatActivity {
                     String blueValueBynaryString = Integer.toBinaryString(blueValue);
 
                     message = message+redValueBynaryString.charAt(redValueBynaryString.length() - 1);
-                    if (checkDelimiter(message) == true){ //If message last five character are #####
+                    if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                        break outerloop;
+                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        vista_texto.setText(hidden);
+                        return;
                     }
 
                     message = message+greenValueBynaryString.charAt(greenValueBynaryString.length() - 1);
-                    if (checkDelimiter(message) == true){ //If message last five character are #####
+                    if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                        break outerloop;
+                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        vista_texto.setText(hidden);
+                        return;
+
                     }
                     message = message+blueValueBynaryString.charAt(blueValueBynaryString.length() - 1);
 
@@ -137,7 +164,7 @@ public class image_selection4 extends AppCompatActivity {
                 }
             }
         }
-        String hidden = toAsciiText(message);
-        vista_texto.setText(hidden);
+
+        Toast.makeText(this, "Couldnt find key on this image :(", Toast.LENGTH_LONG).show();
     }
 }
