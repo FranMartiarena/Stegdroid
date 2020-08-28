@@ -11,9 +11,11 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.File;
+
 public class image_selection extends AppCompatActivity {
 
-
+    String fname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,11 @@ public class image_selection extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode==RESULT_OK){
             Uri path = data.getData();
+            File f = new File(""+path);
+            fname = f.getName();
             Intent intent = new Intent(this,activity_image_selection2.class);
             intent.putExtra("path", path.toString());
+            intent.putExtra("fname", fname);
             startActivity(intent);
         }
     }

@@ -1,9 +1,9 @@
 package com.example.steghide;
 
 
-
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,9 @@ public class image_selection4 extends AppCompatActivity {
 
     ImageView vista_imagen;
     TextView vista_texto;
+    String path;
+    String fname;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +38,11 @@ public class image_selection4 extends AppCompatActivity {
 
         vista_imagen = (ImageView) findViewById(R.id.imageView3_id);
         vista_texto = findViewById(R.id.textView3);
+        vista_texto.setMovementMethod(new ScrollingMovementMethod());
 
         Intent intent = getIntent();
-        String path= intent.getStringExtra("path");
+        path = intent.getStringExtra("path");
+        fname  = intent.getStringExtra("fname");
         Uri fileUri = Uri.parse(path);
         vista_imagen.setImageURI(fileUri);
     }
@@ -104,16 +111,31 @@ public class image_selection4 extends AppCompatActivity {
 
         }
 
+    }
 
+    public boolean checkValidation(String binary_message){
+        String message = toAsciiText(binary_message);
+        String firstFive = message.substring(0,5);
+        Log.d("TAG", "primeros 5 caracteres: "+firstFive);
+        if (firstFive.equals("#####")){
+            return false;
+        }
+        else{
+            return true;
+
+        }
 
     }
 
-    public void decode(View view){
+    String message;
+    int count;
+
+    public String decode(View view){
         int width = vista_imagen.getDrawable().getIntrinsicWidth();
         int height = vista_imagen.getDrawable().getIntrinsicHeight();
 
-        String message = "";
-
+        message = "";
+        count = 0;
         vista_imagen.invalidate();
         BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
         Bitmap bitmap = drawable.getBitmap();
@@ -128,8 +150,9 @@ public class image_selection4 extends AppCompatActivity {
                 if (checkDelimiter(message)){
                     //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                     String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                    hidden = hidden.substring(5,hidden.length());
                     vista_texto.setText(hidden);
-                    return;
+                    return hidden;
                 }
                 else{
 
@@ -142,23 +165,42 @@ public class image_selection4 extends AppCompatActivity {
                     String blueValueBynaryString = Integer.toBinaryString(blueValue);
 
                     message = message+redValueBynaryString.charAt(redValueBynaryString.length() - 1);
+                    count = count+1;
+                    if (count == 5*8){
+                        if (checkValidation(message)){
+                            break outerloop;
+                        }
+                    }
                     if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                         String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        hidden = hidden.substring(5,hidden.length());
                         vista_texto.setText(hidden);
-                        return;
+                        return hidden;
                     }
 
                     message = message+greenValueBynaryString.charAt(greenValueBynaryString.length() - 1);
+                    count = count+1;
+                    if (count == 5*8){
+                        if (checkValidation(message)){
+                            break outerloop;
+                        }
+                    }
                     if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                         String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        hidden = hidden.substring(5,hidden.length());
                         vista_texto.setText(hidden);
-                        return;
+                        return hidden;
 
                     }
                     message = message+blueValueBynaryString.charAt(blueValueBynaryString.length() - 1);
-
+                    count = count+1;
+                    if (count == 5*8){
+                        if (checkValidation(message)){
+                            break outerloop;
+                        }
+                    }
 
 
                 }
@@ -166,5 +208,17 @@ public class image_selection4 extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Couldnt find key on this image :(", Toast.LENGTH_LONG).show();
+        return "";
+    }
+
+    public void edit(View view){
+        String message = decode(null);
+        Intent intent2 = new Intent(this, activity_image_selection2.class);
+        intent2.putExtra("message", message);
+        //Toast.makeText(this, ""+message, Toast.LENGTH_LONG).show();
+        intent2.putExtra("path", path);
+        intent2.putExtra("fname", fname);
+        startActivity(intent2);
+        finish();
     }
 }

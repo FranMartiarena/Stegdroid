@@ -12,32 +12,31 @@ package com.example.steghide;
 */
 
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.graphics.Matrix;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.ByteArrayOutputStream;
-import java.net.BindException;
+import java.io.File;
 
 public class activity_image_selection2 extends AppCompatActivity {
 
     ImageView vista_imagen;
     String message;
     EditText editTextTextMultiLines;
+    String path;
+    String fname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +47,20 @@ public class activity_image_selection2 extends AppCompatActivity {
         vista_imagen.buildDrawingCache(true);
         editTextTextMultiLines = findViewById(R.id.editTextTextMultiLineId);
         Intent intent = getIntent();
-        String path= intent.getStringExtra("path");
+        path = intent.getStringExtra("path");
+        fname = intent.getStringExtra("fname");
         Uri fileUri = Uri.parse(path);
+
+
+
         vista_imagen.setImageURI(fileUri);
+
+        try {
+            String message= intent.getStringExtra("message");
+            editTextTextMultiLines.setText(message);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+        }
 
 
     }
@@ -58,6 +68,7 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -74,9 +85,10 @@ public class activity_image_selection2 extends AppCompatActivity {
         return resizedBitmap;
     }
 
+
     public void encode(View view){
-        message = editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiter
-        if (message.matches("#####")) {
+        message = "#####"+editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiters
+        if (message.matches("##########")) {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -93,13 +105,28 @@ public class activity_image_selection2 extends AppCompatActivity {
         }
 
 
-
-
         int width = vista_imagen.getDrawable().getIntrinsicWidth();
         int height = vista_imagen.getDrawable().getIntrinsicHeight();
 
         int cantidad_bits_msg = binary.length();
         int cantidad_bytes_img = (width*height)*3;
+
+        int count = 0;
+        vista_imagen.invalidate();
+        BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
+        Bitmap bitmap = drawable.getBitmap();
+        bitmap = bitmap.copy(bitmap.getConfig() , true);
+        bitmap = getResizedBitmap(bitmap, width, height);
+        //Toast.makeText(this, "Viejo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
+
+        if (bitmap.getWidth() > 1000 || bitmap.getHeight() > 1000){
+            bitmap = getResizedBitmap(bitmap, width/2, height/2);
+            //Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
+            cantidad_bytes_img = cantidad_bytes_img /2;
+            width = width/2;
+            height = height/2;
+        }
+
 
         if(cantidad_bytes_img < cantidad_bits_msg){
             Toast.makeText(this, "La imagen no es lo suficientemente grande para el mensaje a ocultar", Toast.LENGTH_LONG).show();
@@ -109,12 +136,7 @@ public class activity_image_selection2 extends AppCompatActivity {
         else {
             //Log.d("TAG", "Este es el tamaño de la imagen:"+String.valueOf(width)+" "+String.valueOf(height));
             //editTextTextMultiLines.setText(String.valueOf(cantidad_bytes_img));
-            int count = 0;
-            vista_imagen.invalidate();
-            BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
-            Bitmap bitmap = drawable.getBitmap();
-            bitmap = bitmap.copy(bitmap.getConfig() , true);
-            bitmap = getResizedBitmap(bitmap, width, height);
+
             //int old_pixel = bitmap.getPixel(0,0);
             //int oldRedValue = Color.red(old_pixel);
 
@@ -179,12 +201,13 @@ public class activity_image_selection2 extends AppCompatActivity {
                 }
             }
             try {
+
                 ByteArrayOutputStream bStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
                 byte[] byteArray = bStream.toByteArray();
-
                 Intent intent = new Intent(this, save_image.class);
                 intent.putExtra("BitmapImage", byteArray);
+                intent.putExtra("fname", fname);
                 //Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
                 //Toast.makeText(this, "Viejo: "+ oldRedValue, Toast.LENGTH_LONG).show();
                 startActivity(intent);
@@ -192,7 +215,7 @@ public class activity_image_selection2 extends AppCompatActivity {
 
             }
             catch (Exception e){
-                Toast.makeText(this, "Error, Try with another image", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Error: Try with a smaller image", Toast.LENGTH_LONG).show();
             }
 
 
