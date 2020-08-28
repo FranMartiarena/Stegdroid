@@ -87,8 +87,8 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
     public void encode(View view){
-        message = "#####"+editTextTextMultiLines.getText().toString()+"#####";//gets the secret message in string type and adds delimiters
-        if (message.matches("##########")) {
+        message = "#%#%#"+editTextTextMultiLines.getText().toString()+"#%#&-&%#%&&/%#";//gets the secret message in string type and adds delimiters
+        if (message.matches("#%#%##%#&-&%#%&&/%#")) {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
             return;
         }

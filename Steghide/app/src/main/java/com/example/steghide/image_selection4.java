@@ -94,13 +94,13 @@ public class image_selection4 extends AppCompatActivity {
         else{
             String message = toAsciiText(binary_message);
 
-            if (message.length() <= 5){
+            if (message.length() <= 14){
                 return false;
             }
             else{
-                String lastFive = message.substring(message.length() -5);
+                String lastFive = message.substring(message.length() -14);
                 //Log.d("TAG", "Ultimos 5 caracteres: "+lastFive);
-                if (lastFive.equals("#####")){
+                if (lastFive.equals("#%#&-&%#%&&/%#")){
                     return true;
                 }
                 else{
@@ -117,7 +117,7 @@ public class image_selection4 extends AppCompatActivity {
         String message = toAsciiText(binary_message);
         String firstFive = message.substring(0,5);
         Log.d("TAG", "primeros 5 caracteres: "+firstFive);
-        if (firstFive.equals("#####")){
+        if (firstFive.equals("#%#%#")){
             return false;
         }
         else{
@@ -149,7 +149,7 @@ public class image_selection4 extends AppCompatActivity {
                 int pixel = bitmap.getPixel(x,y);
                 if (checkDelimiter(message)){
                     //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                    String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                    String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-14);
                     hidden = hidden.substring(5,hidden.length());
                     vista_texto.setText(hidden);
                     return hidden;
@@ -173,7 +173,7 @@ public class image_selection4 extends AppCompatActivity {
                     }
                     if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-14);
                         hidden = hidden.substring(5,hidden.length());
                         vista_texto.setText(hidden);
                         return hidden;
@@ -188,7 +188,7 @@ public class image_selection4 extends AppCompatActivity {
                     }
                     if (checkDelimiter(message)){ //If message last five character are #####
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
-                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-5);
+                        String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-14);
                         hidden = hidden.substring(5,hidden.length());
                         vista_texto.setText(hidden);
                         return hidden;
@@ -202,12 +202,11 @@ public class image_selection4 extends AppCompatActivity {
                         }
                     }
 
-
                 }
             }
         }
 
-        Toast.makeText(this, "Couldnt find key on this image :(", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "No message in the Image", Toast.LENGTH_LONG).show();
         return "";
     }
 
