@@ -1,2 +1,2 @@
-# Steghide
+# Steghide4Android
 This is an image Steganography mobile application...
