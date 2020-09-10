@@ -1,17 +1,9 @@
 package com.example.steghide;
 //TO DO: Poder pasar bitmaps grandes entre activities
 //TO DO: Pasar el nombre de la primera imagen por intent add extra para usar el nombre en el nuevo archivo
-/*
-     *Encrypt an image with text, the output file will be of type .png
-     *@param path        The path (folder) containing the image to modify
-     *@param original   The name of the image to modify
-     *@param ext1         The extension type of the image to modify (jpg, png)
-     *@param stegan   The output name of the file
-     *@param message  The text to hide in the image
-     *@param type     integer representing either basic or advanced encoding
-*/
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,7 +11,9 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class activity_image_selection2 extends AppCompatActivity {
 
@@ -37,6 +33,7 @@ public class activity_image_selection2 extends AppCompatActivity {
     EditText editTextTextMultiLines;
     String path;
     String fname;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +48,6 @@ public class activity_image_selection2 extends AppCompatActivity {
         fname = intent.getStringExtra("fname");
         Uri fileUri = Uri.parse(path);
 
-
-
         vista_imagen.setImageURI(fileUri);
 
         try {
@@ -64,7 +59,6 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
     }
-
 
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
@@ -86,14 +80,15 @@ public class activity_image_selection2 extends AppCompatActivity {
     }
 
 
+
     public void encode(View view){
-        message = "#%#%#"+editTextTextMultiLines.getText().toString()+"#%#&-&%#%&&/%#";//gets the secret message in string type and adds delimiters
+        message = "#%#%#"+editTextTextMultiLines.getText().toString()+"#%#&-&%#%&&/%#";
         if (message.matches("#%#%##%#&-&%#%&&/%#")) {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
             return;
         }
         byte[] message_in_bits = message.getBytes();
-        StringBuilder binary = new StringBuilder();//the variable binary get the message in bytes as a string
+        StringBuilder binary = new StringBuilder();
 
         for (byte b : message_in_bits){
             int val = b;
@@ -117,20 +112,21 @@ public class activity_image_selection2 extends AppCompatActivity {
         Bitmap bitmap = drawable.getBitmap();
         bitmap = bitmap.copy(bitmap.getConfig() , true);
         bitmap = getResizedBitmap(bitmap, width, height);
+
         //Toast.makeText(this, "Viejo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
 
-        if (bitmap.getWidth() > 1000 || bitmap.getHeight() > 1000){
+        /*if (bitmap.getWidth() > 1000 || bitmap.getHeight() > 1000){
             bitmap = getResizedBitmap(bitmap, width/2, height/2);
             //Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
             cantidad_bytes_img = cantidad_bytes_img /2;
             width = width/2;
             height = height/2;
-        }
+        }*/
 
 
         if(cantidad_bytes_img < cantidad_bits_msg){
             Toast.makeText(this, "La imagen no es lo suficientemente grande para el mensaje a ocultar", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this,image_selection.class);
+            Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
         }
         else {
@@ -200,18 +196,46 @@ public class activity_image_selection2 extends AppCompatActivity {
 
                 }
             }
+
             try {
+                /*
+                String fbmp = "bitmap";
 
                 ByteArrayOutputStream bStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
                 byte[] byteArray = bStream.toByteArray();
+
+                FileOutputStream stream = this.openFileOutput(fbmp, Context.MODE_PRIVATE);
+                stream.write(byteArray);
+                stream.close();
+
+                Intent intent = new Intent(this, save_image.class);
+                intent.putExtra("fname", fname);
+                startActivity(intent);*/
+
+                String filename = "bitmap";
+                //ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+
+                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100,stream);
+                //stream.write(bStream.toByteArray());
+                stream.close();
+
+                Intent intent = new Intent(this, save_image.class);
+                intent.putExtra("fname", fname);
+                startActivity(intent);
+
+                /*ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+                byte[] byteArray = bStream.toByteArray();
+
                 Intent intent = new Intent(this, save_image.class);
                 intent.putExtra("BitmapImage", byteArray);
                 intent.putExtra("fname", fname);
                 //Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
                 //Toast.makeText(this, "Viejo: "+ oldRedValue, Toast.LENGTH_LONG).show();
                 startActivity(intent);
-                finish();
+                finish();*/
 
             }
             catch (Exception e){

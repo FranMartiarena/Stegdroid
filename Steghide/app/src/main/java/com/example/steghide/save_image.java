@@ -1,5 +1,7 @@
 package com.example.steghide;
 
+//TO DO: Pasar bitmap grande entre activities sin perdida.
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -29,8 +31,13 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.nio.file.Files;
 
 public class save_image extends AppCompatActivity {
 
@@ -43,9 +50,14 @@ public class save_image extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_image);
         vista_imagen = findViewById(R.id.imageView3_id);
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         fname = getIntent().getStringExtra("fname");
-        bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        try {
+            bitmap = BitmapFactory.decodeStream(this.openFileInput("bitmap"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        //byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        //bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         vista_imagen.setImageBitmap(bitmap);
         vista_imagen.buildDrawingCache();
         vista_imagen.setDrawingCacheEnabled(true);

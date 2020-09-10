@@ -36,7 +36,7 @@ public class image_selection4 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_selection4);
 
-        vista_imagen = (ImageView) findViewById(R.id.imageView3_id);
+        vista_imagen = findViewById(R.id.imageView3_id);
         vista_texto = findViewById(R.id.textView3);
         vista_texto.setMovementMethod(new ScrollingMovementMethod());
 
@@ -171,7 +171,7 @@ public class image_selection4 extends AppCompatActivity {
                             break outerloop;
                         }
                     }
-                    if (checkDelimiter(message)){ //If message last five character are #####
+                    if (checkDelimiter(message)){
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                         String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-14);
                         hidden = hidden.substring(5,hidden.length());
@@ -186,7 +186,7 @@ public class image_selection4 extends AppCompatActivity {
                             break outerloop;
                         }
                     }
-                    if (checkDelimiter(message)){ //If message last five character are #####
+                    if (checkDelimiter(message)){
                         //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                         String hidden = toAsciiText(message).substring(0,toAsciiText(message).length()-14);
                         hidden = hidden.substring(5,hidden.length());

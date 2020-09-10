@@ -9,9 +9,7 @@
     <application android:requestLegacyExternalStorage="true" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".save_image"></activity>
         <activity android:name=".image_selection4" />
-        <activity android:name=".image_selection3" />
         <activity android:name=".activity_image_selection2" />
-        <activity android:name=".image_selection" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
