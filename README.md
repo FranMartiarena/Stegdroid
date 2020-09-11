@@ -21,7 +21,7 @@ Steghide4Android is an android app, that allow users to hide a secret message in
 
 <br/>
 
-For hidding the data, first, the message is passed to binary. Each bit of this bynary message is going to replace the "Last significant bit" of every pixel value(Also to binary) in the image. When changing the last significant bit of every pixel color value, the difference is so little, that it is nearly impossible to tell the differnce between the real image and the one that contains the message.
+For hidding the data, first, the message is passed to binary. Each bit of this bynary message is going to replace the "Last significant bit" of every pixel value(Also to binary) in the image. When changing the last significant bit of every pixel color value, the difference is so little, that it is nearly impossible to tell the difference between the real image and the one that contains the message.
 
 ---
 By Francisco Martiarena
