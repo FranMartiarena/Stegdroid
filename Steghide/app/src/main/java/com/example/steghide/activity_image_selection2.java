@@ -1,16 +1,19 @@
 package com.example.steghide;
 //TO DO: Poder pasar bitmaps grandes entre activities
-//TO DO: Pasar el nombre de la primera imagen por intent add extra para usar el nombre en el nuevo archivo
 
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.LruCache;
@@ -87,10 +90,10 @@ public class activity_image_selection2 extends AppCompatActivity {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
             return;
         }
-        byte[] message_in_bits = message.getBytes();
+        byte[] message_in_bits = message.getBytes(); //mensaje a byte array
         StringBuilder binary = new StringBuilder();
 
-        for (byte b : message_in_bits){
+        for (byte b : message_in_bits){  //Sacamos cantidad de bytes en el mensaje
             int val = b;
             for (int i = 0; i < 8; i++){
                 binary.append((val & 128) == 0 ? 0 : 1);
@@ -108,10 +111,10 @@ public class activity_image_selection2 extends AppCompatActivity {
 
         int count = 0;
         vista_imagen.invalidate();
-        BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
+        BitmapDrawable drawable = ((BitmapDrawable) vista_imagen.getDrawable());
         Bitmap bitmap = drawable.getBitmap();
         bitmap = bitmap.copy(bitmap.getConfig() , true);
-        bitmap = getResizedBitmap(bitmap, width, height);
+        //bitmap = getResizedBitmap(bitmap, width, height);
 
         //Toast.makeText(this, "Viejo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
 
@@ -197,49 +200,56 @@ public class activity_image_selection2 extends AppCompatActivity {
                 }
             }
 
+
             try {
+                String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                File myDir = new File(root + "/Steghide");
+                myDir.mkdirs();
+                File file = new File (myDir, fname+".png");
+                FileOutputStream out = new FileOutputStream(file);
+                //OutputStream outstream;
+                //ContentValues values = new ContentValues();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+
+                ContentValues values = new ContentValues();
+                //values.put(MediaStore.Images.Media.DISPLAY_NAME, fname);
+                values.put(MediaStore.Images.Media.TITLE, fname);
+                values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                values.put("_data", file.getAbsolutePath());
+
+                ContentResolver cr = getContentResolver();
+                cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                MediaScannerConnection.scanFile(this,
+                        new String[] {MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.i("ExternalStorage", "Scanned " + path + ":");
+                                Log.i("ExternalStorage", "-> uri=" + uri);
+                            }
+                        });
+
+                Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
                 /*
-                String fbmp = "bitmap";
 
-                ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-                byte[] byteArray = bStream.toByteArray();
+                String filename = "bitmap";
 
-                FileOutputStream stream = this.openFileOutput(fbmp, Context.MODE_PRIVATE);
-                stream.write(byteArray);
+
+                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100,stream);
                 stream.close();
 
                 Intent intent = new Intent(this, save_image.class);
                 intent.putExtra("fname", fname);
                 startActivity(intent);*/
 
-                String filename = "bitmap";
-                //ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-
-                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100,stream);
-                //stream.write(bStream.toByteArray());
-                stream.close();
-
-                Intent intent = new Intent(this, save_image.class);
-                intent.putExtra("fname", fname);
-                startActivity(intent);
-
-                /*ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-                byte[] byteArray = bStream.toByteArray();
-
-                Intent intent = new Intent(this, save_image.class);
-                intent.putExtra("BitmapImage", byteArray);
-                intent.putExtra("fname", fname);
-                //Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
-                //Toast.makeText(this, "Viejo: "+ oldRedValue, Toast.LENGTH_LONG).show();
-                startActivity(intent);
-                finish();*/
 
             }
             catch (Exception e){
-                Toast.makeText(this, "Error: Try with a smaller image", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
             }
 
 

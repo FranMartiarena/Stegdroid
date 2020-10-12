@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class image_selection4 extends AppCompatActivity {
     TextView vista_texto;
     String path;
     String fname;
+    Bitmap bitmap;
 
 
     @Override
@@ -44,25 +48,14 @@ public class image_selection4 extends AppCompatActivity {
         path = intent.getStringExtra("path");
         fname  = intent.getStringExtra("fname");
         Uri fileUri = Uri.parse(path);
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), fileUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         vista_imagen.setImageURI(fileUri);
     }
 
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
-    }
 
 
     public String toAsciiText(String binary_message){
@@ -131,16 +124,17 @@ public class image_selection4 extends AppCompatActivity {
     int count;
 
     public String decode(View view){
-        int width = vista_imagen.getDrawable().getIntrinsicWidth();
-        int height = vista_imagen.getDrawable().getIntrinsicHeight();
-
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
         message = "";
         count = 0;
         vista_imagen.invalidate();
-        BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
+        //Toast.makeText(this, ""+width+" "+height, Toast.LENGTH_LONG).show();
+
+        /*BitmapDrawable drawable = ((BitmapDrawable)vista_imagen.getDrawable());
         Bitmap bitmap = drawable.getBitmap();
         bitmap = bitmap.copy(bitmap.getConfig() , true);
-        bitmap = getResizedBitmap(bitmap, width, height);
+        bitmap = getResizedBitmap(bitmap, width, height);*/
 
 
         outerloop:
