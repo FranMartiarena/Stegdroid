@@ -2,6 +2,7 @@ package com.example.steghide;
 //TO DO: Poder pasar bitmaps grandes entre activities
 
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,12 +15,15 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +33,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import android.graphics.Bitmap;
+import android.view.View;
+
+
 public class activity_image_selection2 extends AppCompatActivity {
 
     ImageView vista_imagen;
@@ -36,12 +44,15 @@ public class activity_image_selection2 extends AppCompatActivity {
     EditText editTextTextMultiLines;
     String path;
     String fname;
-
+    ProgressDialog progressDialog;
+    Button button;
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_selection2);
+        button = findViewById(R.id.done_button_id);
         vista_imagen = findViewById(R.id.imageView2_id);
         vista_imagen.setDrawingCacheEnabled(true);
         vista_imagen.buildDrawingCache(true);
@@ -60,6 +71,33 @@ public class activity_image_selection2 extends AppCompatActivity {
             Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
         }
 
+        button.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    progressDialog = new ProgressDialog(activity_image_selection2.this);
+                    progressDialog.setContentView(R.layout.activity_loading);
+                    progressDialog.setMessage("Loading..."); // Setting Message
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                    progressDialog.setCancelable(false);
+
+                    handler.post(new Runnable() {
+                        public void run() {
+                            try {
+                                encode();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            progressDialog.dismiss();
+                        }
+                    });
+
+
+                }
+
+        }
+
+        );
 
     }
 
@@ -84,7 +122,9 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
 
-    public void encode(View view){
+    public void encode(){
+
+
         message = "#%#%#"+editTextTextMultiLines.getText().toString()+"#%#&-&%#%&&/%#";
         if (message.matches("#%#%##%#&-&%#%&&/%#")) {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
@@ -231,7 +271,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                                 Log.i("ExternalStorage", "-> uri=" + uri);
                             }
                         });
-
+                progressDialog.dismiss();
                 Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
                 /*
 

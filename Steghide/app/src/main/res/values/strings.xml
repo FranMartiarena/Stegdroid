@@ -10,5 +10,5 @@
     <string name="hide_name">HIDE</string>
     <string name="decode_name">Decode</string>
     <string name="title_activity_image_selection">Image_selection</string>
-
+    <string name="Saving">saving</string>
 </resources>
