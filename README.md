@@ -13,7 +13,7 @@ Steganography is an encryption technique that can be used along with cryptograph
 
 <br/>
 
-Steghide4Android is an android app, that allow users to hide a secret message into an image. It can be used to store passwords or even exchange messages between partners in a very secure way.
+Stegdroid is an android app, that allow users to hide a secret message into an image. It can be used to store passwords or even exchange messages between partners in a very secure way.
 
 <br/>
 
