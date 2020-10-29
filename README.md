@@ -1,4 +1,4 @@
-# Steghide4Android
+# Stegdroid
 
 <br/>
 
