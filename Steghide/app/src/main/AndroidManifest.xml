@@ -8,7 +8,6 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".Loading"></activity>
         <activity android:name=".save_image" />
         <activity android:name=".image_selection4" />
         <activity android:name=".activity_image_selection2" />

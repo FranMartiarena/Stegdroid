@@ -71,7 +71,7 @@ public class save_image extends AppCompatActivity {
 
     public void saveImage(View view){
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root + "/Steghide");
+        File myDir = new File(root + "/Stegdroid");
         myDir.mkdirs();
 
         File file = new File (myDir, fname+".png");

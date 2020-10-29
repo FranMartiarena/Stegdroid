@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Steghide</string>
+    <string name="app_name">Stegdroid</string>
     <string name="message_hint">Secret message</string>
     <string name="edit_name">Edit</string>
     <string name="select_name">Select</string>
@@ -11,4 +11,6 @@
     <string name="decode_name">Decode</string>
     <string name="title_activity_image_selection">Image_selection</string>
     <string name="Saving">saving</string>
+    <string name="Info">Stegdroid is an image steganography app developed by Francisco Martiarena.\n\nTo hide a message just click the "HIDE" button, select an image with a size smaller than 2500px (either width or height), write your message and click the "SAVE" button.\n\nYour new image will be saved in the phone\'s image gallery in a folder called "Stegdroid"\n
+---\nTo get the hidden message from an image just click the "DECODE" button, select the image and click the "DECODE" button again.\n\nIf you want to edit the file just click the "EDIT" button.</string>
 </resources>

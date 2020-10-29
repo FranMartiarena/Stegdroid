@@ -1,5 +1,4 @@
 package com.example.steghide;
-//TO DO: Poder pasar bitmaps grandes entre activities
 
 
 import android.app.ProgressDialog;
@@ -48,6 +47,7 @@ public class activity_image_selection2 extends AppCompatActivity {
     Button button;
     Handler handler = new Handler();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +76,7 @@ public class activity_image_selection2 extends AppCompatActivity {
                 public void onClick(View v){
                     progressDialog = new ProgressDialog(activity_image_selection2.this);
                     progressDialog.setContentView(R.layout.activity_loading);
-                    progressDialog.setMessage("Loading..."); // Setting Message
+                    progressDialog.setMessage("Saving ..."); // Setting Message
                     progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     progressDialog.show();
                     progressDialog.setCancelable(false);
@@ -102,7 +102,7 @@ public class activity_image_selection2 extends AppCompatActivity {
     }
 
 
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+   /* public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
 
         int width = bm.getWidth();
         int height = bm.getHeight();
@@ -118,11 +118,34 @@ public class activity_image_selection2 extends AppCompatActivity {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         return resizedBitmap;
-    }
+    }*/
+
+
 
 
 
     public void encode(){
+
+        vista_imagen.invalidate();
+        BitmapDrawable drawable = ((BitmapDrawable) vista_imagen.getDrawable());
+        Bitmap bitmap = drawable.getBitmap();
+        bitmap = bitmap.copy(bitmap.getConfig() , true);
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        if (bitmap.getWidth() > 2500 || bitmap.getHeight() > 2500){
+            //bitmap = getResizedBitmap(bitmap, width/2, height/2);
+            //Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
+            //cantidad_bytes_img = cantidad_bytes_img /2;
+            //width = width/2;
+            //height = height/2;
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+            Toast.makeText(this, "Error: Select a smaller image", Toast.LENGTH_LONG).show();
+            return;
+        }
+
 
 
         message = "#%#%#"+editTextTextMultiLines.getText().toString()+"#%#&-&%#%&&/%#";
@@ -132,6 +155,7 @@ public class activity_image_selection2 extends AppCompatActivity {
         }
         byte[] message_in_bits = message.getBytes(); //mensaje a byte array
         StringBuilder binary = new StringBuilder();
+        Toast.makeText(this, "getbytes = "+message_in_bits, Toast.LENGTH_SHORT).show();
 
         for (byte b : message_in_bits){  //Sacamos cantidad de bytes en el mensaje
             int val = b;
@@ -143,32 +167,29 @@ public class activity_image_selection2 extends AppCompatActivity {
         }
 
 
-        int width = vista_imagen.getDrawable().getIntrinsicWidth();
-        int height = vista_imagen.getDrawable().getIntrinsicHeight();
+
+
 
         int cantidad_bits_msg = binary.length();
         int cantidad_bytes_img = (width*height)*3;
 
         int count = 0;
-        vista_imagen.invalidate();
-        BitmapDrawable drawable = ((BitmapDrawable) vista_imagen.getDrawable());
-        Bitmap bitmap = drawable.getBitmap();
-        bitmap = bitmap.copy(bitmap.getConfig() , true);
         //bitmap = getResizedBitmap(bitmap, width, height);
 
         //Toast.makeText(this, "Viejo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
 
-        /*if (bitmap.getWidth() > 1000 || bitmap.getHeight() > 1000){
+        /*if (bitmap.getWidth() > 2500 || bitmap.getHeight() > 2500){
             bitmap = getResizedBitmap(bitmap, width/2, height/2);
-            //Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
             cantidad_bytes_img = cantidad_bytes_img /2;
             width = width/2;
             height = height/2;
+
         }*/
 
 
         if(cantidad_bytes_img < cantidad_bits_msg){
-            Toast.makeText(this, "La imagen no es lo suficientemente grande para el mensaje a ocultar", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: The image is not big enough for the message to encode", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
         }
