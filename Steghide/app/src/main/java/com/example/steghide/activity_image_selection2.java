@@ -46,7 +46,7 @@ public class activity_image_selection2 extends AppCompatActivity {
     ProgressDialog progressDialog;
     Button button;
     Handler handler = new Handler();
-
+    Uri fileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class activity_image_selection2 extends AppCompatActivity {
         Intent intent = getIntent();
         path = intent.getStringExtra("path");
         fname = intent.getStringExtra("fname");
-        Uri fileUri = Uri.parse(path);
+        fileUri = Uri.parse(path);
 
         vista_imagen.setImageURI(fileUri);
 
@@ -102,38 +102,45 @@ public class activity_image_selection2 extends AppCompatActivity {
     }
 
 
-   /* public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+  /* public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
 
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
+       int width = bm.getWidth();
+       int height = bm.getHeight();
+       float scaleWidth = ((float) newWidth) / width;
+       float scaleHeight = ((float) newHeight) / height;
+       // CREATE A MATRIX FOR THE MANIPULATION
+       Matrix matrix = new Matrix();
+       // RESIZE THE BIT MAP
+       matrix.postScale(scaleWidth, scaleHeight);
 
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
-    }*/
+       // "RECREATE" THE NEW BITMAP
+       Bitmap resizedBitmap = Bitmap.createBitmap(
+               bm, 0, 0, width, height, matrix, false);
+       bm.recycle();
+       return resizedBitmap;
 
+   }
 
-
+*/
 
 
     public void encode(){
 
-        vista_imagen.invalidate();
-        BitmapDrawable drawable = ((BitmapDrawable) vista_imagen.getDrawable());
-        Bitmap bitmap = drawable.getBitmap();
-        bitmap = bitmap.copy(bitmap.getConfig() , true);
+        Bitmap bitmap = null;
 
+        try
+        {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver() , fileUri);
+            bitmap = bitmap.copy(bitmap.getConfig() , true);
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+        }
+        
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-
+        //Toast.makeText(this, ""+width+" "+height, Toast.LENGTH_LONG).show();
         if (bitmap.getWidth() > 2500 || bitmap.getHeight() > 2500){
             //bitmap = getResizedBitmap(bitmap, width/2, height/2);
             //Toast.makeText(this, "Nuevo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
@@ -153,11 +160,10 @@ public class activity_image_selection2 extends AppCompatActivity {
             Toast.makeText(this, "¡No secret message to hide!", Toast.LENGTH_SHORT).show();
             return;
         }
-        byte[] message_in_bits = message.getBytes(); //mensaje a byte array
+        byte[] message_in_bytes = message.getBytes(); //mensaje a byte array
         StringBuilder binary = new StringBuilder();
-        Toast.makeText(this, "getbytes = "+message_in_bits, Toast.LENGTH_SHORT).show();
 
-        for (byte b : message_in_bits){  //Sacamos cantidad de bytes en el mensaje
+        for (byte b : message_in_bytes){  //bytes of the message to bits
             int val = b;
             for (int i = 0; i < 8; i++){
                 binary.append((val & 128) == 0 ? 0 : 1);
@@ -171,9 +177,10 @@ public class activity_image_selection2 extends AppCompatActivity {
 
 
         int cantidad_bits_msg = binary.length();
-        int cantidad_bytes_img = (width*height)*3;
+        int cantidad_bits_img = (width*height)*3*8;
 
-        int count = 0;
+        int count = 0;//Contador de mensage en bit
+
         //bitmap = getResizedBitmap(bitmap, width, height);
 
         //Toast.makeText(this, "Viejo tamaño:"+bitmap.getWidth()+"x"+bitmap.getHeight(), Toast.LENGTH_LONG).show();
@@ -188,7 +195,7 @@ public class activity_image_selection2 extends AppCompatActivity {
         }*/
 
 
-        if(cantidad_bytes_img < cantidad_bits_msg){
+        if(cantidad_bits_img < cantidad_bits_msg){
             Toast.makeText(this, "Error: The image is not big enough for the message to encode", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
@@ -217,42 +224,35 @@ public class activity_image_selection2 extends AppCompatActivity {
                         int greenValue = Color.green(pixel);
                         int blueValue = Color.blue(pixel);
 
-                        String redValueBynaryString = Integer.toBinaryString(redValue);
+
+                        String redValueBynaryString = Integer.toBinaryString(redValue);//Color int value to a binary string
                         String greenValueBynaryString = Integer.toBinaryString(greenValue);
                         String blueValueBynaryString = Integer.toBinaryString(blueValue);
 
-                        //Log.d("TAG", "El valor r del pixel:"+"["+String.valueOf(x)+","+String.valueOf(y)+"]"+"es: "+ String.valueOf(redValue)+" que es en binario; "+redValueBynaryString);
-
                         //insertar bit en r
                         redValueBynaryString = redValueBynaryString.substring(0,redValueBynaryString.length()-1)+binary.charAt(count);
-                        //redValueBynaryString = binary.charAt(count)+redValueBynaryString.substring(1,redValueBynaryString.length());
                         int newRedValue = Integer.parseInt(redValueBynaryString, 2);//new red binary value to decimal
                         bitmap.setPixel(x, y, Color.rgb(newRedValue, greenValue, blueValue));//use this to change pixel values xD
-                        //Log.d("TAG","Cambie "+redValue+" por "+newRedValue);
+
+
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
-                            //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                             break outerloop;
                         }
                         //insertar bit en g
                         greenValueBynaryString = greenValueBynaryString.substring(0,greenValueBynaryString.length()-1)+binary.charAt(count);
-                        //greenValueBynaryString = binary.charAt(count)+greenValueBynaryString.substring(1,greenValueBynaryString.length());
                         int newGreenValue = Integer.parseInt(greenValueBynaryString, 2);
-                        bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, blueValue));//use this to change pixel values xD
-                        //Log.d("TAG","Cambie "+greenValue+" por "+newGreenValue);
+                        bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, blueValue));
                         count = count + 1;
 
                         if (count >= cantidad_bits_msg){
-                            //Toast.makeText(this, "break", Toast.LENGTH_LONG).show();
                             break outerloop;
                         }
                         //insertar bit en b
                         blueValueBynaryString = blueValueBynaryString.substring(0,blueValueBynaryString.length()-1)+binary.charAt(count);
-                        //blueValueBynaryString = binary.charAt(count)+blueValueBynaryString.substring(1,blueValueBynaryString.length());
                         int newBlueValue = Integer.parseInt(blueValueBynaryString, 2);
-                        bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, newBlueValue));//use this to change pixel values xD
-                        //Log.d("TAG","Cambie "+blueValue+" por "+newBlueValue);
+                        bitmap.setPixel(x, y, Color.rgb(newRedValue, newGreenValue, newBlueValue));
                         count = count + 1;
 
                     }
@@ -294,18 +294,6 @@ public class activity_image_selection2 extends AppCompatActivity {
                         });
                 progressDialog.dismiss();
                 Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
-                /*
-
-                String filename = "bitmap";
-
-
-                FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100,stream);
-                stream.close();
-
-                Intent intent = new Intent(this, save_image.class);
-                intent.putExtra("fname", fname);
-                startActivity(intent);*/
 
 
             }

@@ -91,9 +91,9 @@ public class image_selection4 extends AppCompatActivity {
                 return false;
             }
             else{
-                String lastFive = message.substring(message.length() -14);
+                String last = message.substring(message.length() -14);
                 //Log.d("TAG", "Ultimos 5 caracteres: "+lastFive);
-                if (lastFive.equals("#%#&-&%#%&&/%#")){
+                if (last.equals("#%#&-&%#%&&/%#")){
                     return true;
                 }
                 else{
@@ -109,7 +109,7 @@ public class image_selection4 extends AppCompatActivity {
     public boolean checkValidation(String binary_message){
         String message = toAsciiText(binary_message);
         String firstFive = message.substring(0,5);
-        Log.d("TAG", "primeros 5 caracteres: "+firstFive);
+        //Log.d("TAG", "primeros 5 caracteres: "+firstFive);
         if (firstFive.equals("#%#%#")){
             return false;
         }
@@ -160,7 +160,7 @@ public class image_selection4 extends AppCompatActivity {
 
                     message = message+redValueBynaryString.charAt(redValueBynaryString.length() - 1);
                     count = count+1;
-                    if (count == 5*8){
+                        if (count == 5*8){
                         if (checkValidation(message)){
                             break outerloop;
                         }
