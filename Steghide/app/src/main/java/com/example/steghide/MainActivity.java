@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
@@ -61,21 +60,18 @@ public class MainActivity extends AppCompatActivity {
             );
         }
     }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void information(View view){
-        // inflate the layout of the popup window
-        LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.information, null);
 
-        // create the popup window
+        // popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = true; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
         popupWindow.setElevation(20);
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
         // dismiss the popup window when touched
@@ -109,10 +105,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode==RESULT_OK){
+        if (resultCode==RESULT_OK) {
             Uri path = data.getData();
-            File f = new File(""+path);
-            fname = f.getName();
+            fname = path.getLastPathSegment();
             if (option == 0){
                 Intent intent = new Intent(this,activity_image_selection2.class);
                 intent.putExtra("path", path.toString());
